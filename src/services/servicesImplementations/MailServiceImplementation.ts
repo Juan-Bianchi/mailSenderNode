@@ -1,18 +1,18 @@
 import MailSentDTO from "../../dtos/MailSentDTO";
 import Mail from "../../models/Mail";
-import MailRepository from "../../repositories/MailRepository";
+import MailRepositoryImplementation from "../../repositories/repositoriesImplementations/MailRepositoryImplementation";
 import MailService from "../MailService";
 
 class MailServiceImplementation implements MailService{
 
-    private mailRepository: MailRepository;
+    private mailRepositoryImpl: MailRepositoryImplementation;
 
-    public constructor (mailRepository: MailRepository) {
-        this.mailRepository = mailRepository;
+    public constructor (mailRepositoryImpl: MailRepositoryImplementation) {
+        this.mailRepositoryImpl = mailRepositoryImpl;
     }
 
     public async getMailById(id: number): Promise<MailSentDTO | null> {
-        const mail: Mail | null = await this.mailRepository.getMailById(id);
+        const mail: Mail | null = await this.mailRepositoryImpl.getMailById(id);
         if(!mail)
             return mail;
 
@@ -21,17 +21,14 @@ class MailServiceImplementation implements MailService{
     }
 
     public async getMailsByDateAndId(id: number, date: Date): Promise<MailSentDTO[]> {
-        const mails: Mail [] = await this.mailRepository.getMailsByDateAndId(id, date);
+        const mails: Mail [] = await this.mailRepositoryImpl.getMailsByDateAndId(id, date);
         return mails.map(mail => new MailSentDTO(mail))
     }
 
     public async getMailsByUserId(userId: number): Promise<MailSentDTO[]> {
-        const mails: Mail [] = await this.mailRepository.getMailsByUserId(userId);
+        const mails: Mail [] = await this.mailRepositoryImpl.getMailsByUserId(userId);
         return mails.map(mail => new MailSentDTO(mail))
     }
-
-    public async sendMail
-
 }
 
 export default MailService;

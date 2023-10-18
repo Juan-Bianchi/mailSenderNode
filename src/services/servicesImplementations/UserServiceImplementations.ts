@@ -1,19 +1,16 @@
-import UserRepository from "../../repositories/UserRepository";
-import MailService from "./MailServiceImplementation";
-import User from "../../models/User";
 import UserDTO from "../../dtos/UserDTO";
 import UserService from "../UserService";
+import UserRepositoryImplementation from "../../repositories/repositoriesImplementations/UserRepositoryImplementation";
 
 class UserServiceImplementations implements UserService {
+    private UserRepositoryImpl: UserRepositoryImplementation;
 
-    private userRepository: UserRepository;
-
-    public constructor(userRepository: UserRepository) {
-        this.userRepository = userRepository;
+    public constructor(UserRepositoryImpl: UserRepositoryImplementation) {
+        this.UserRepositoryImpl = UserRepositoryImpl;
     }
 
     public async getAllUsers(): Promise<UserDTO[]> {
-        const usersDTO: UserDTO[] = (await this.userRepository.getUsers()).map(user => new UserDTO(user));
+        const usersDTO: UserDTO[] = (await this.UserRepositoryImpl.getUsers()).map(user => new UserDTO(user));
         return usersDTO;
     }
 }
