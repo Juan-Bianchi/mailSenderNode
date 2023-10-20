@@ -2,7 +2,8 @@ import User from '../models/User'
 
 interface UserRepository {
     getUsers(): Promise<User []>;
-    getUserById(id: number): Promise<User | null>;
+    getUserByEmail(email: string): Promise<User | null>;
+    saveUser(newUser: RegisterDTO): Promise<boolean>;
 }
 
 export default UserRepository;

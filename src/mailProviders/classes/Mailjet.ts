@@ -18,36 +18,41 @@ class Mailjet implements Strategy{
     public async sendMail(mail: Mail): Promise<boolean> {
 
         try{
+            const recipients = mail.getRecipients().map(recipient => {
+                return {
+                    Email: `${recipient}`
+                }
+            });
+
             const data: SendEmailV3_1.Body = {
                 Messages: [
                     {
                     From: {
-                        Email: 'pilot@test.com',
+                        Email: `${mail.getSender()?.getOwnEmail()}`,
+                        Name: 'Mailjet Sender'
                     },
                     To: [
-                        {
-                        Email: 'passenger@test.com',
-                        },
+                        ... recipients
                     ],
-                    TemplateErrorReporting: {
-                        Email: 'reporter@test.com',
-                        Name: 'Reporter',
+                    
+                    Subject: mail.getSubject(),
+                    HTMLPart: '<h3>This is my note sender application!!</h3><br />May the delivery force be with you!',
+                    TextPart: mail.getMessage(),
                     },
-                    Subject: 'Your email flight plan!',
-                    HTMLPart: '<h3>Dear passenger, welcome to Mailjet!</h3><br />May the delivery force be with you!',
-                    TextPart: 'Dear passenger, welcome to Mailjet! May the delivery force be with you!',
-                    },
-                ],
-                };
+                ]
+            };
             
-                const result: LibraryResponse<SendEmailV3_1.Response> = await this.mailjet
-                        .post('send', { version: 'v3.1' })
-                        .request(data);
-            
-                const {Status: status} = result.body.Messages[0];
-                console.log(status);
-                this.lastStatus = status.toLocaleUpperCase();
-                return status.includes('201');
+            const result: LibraryResponse<SendEmailV3_1.Response> = await this.mailjet
+                    .post('send', { version: 'v3.1' })
+                    .request(data);
+
+            return await (async ()=> {
+                    const {Status: status} = result.body.Messages[0];
+                    console.log(status);
+                    this.lastStatus = status.toLocaleUpperCase();
+
+                    return status.includes('success')
+            })();
         }
         catch(e){
             throw e;

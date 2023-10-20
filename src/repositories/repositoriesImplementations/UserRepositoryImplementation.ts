@@ -1,4 +1,4 @@
-import { PrismaClient, UserEntity } from "@prisma/client";
+import { PrismaClient, UserEntity, Role } from "@prisma/client";
 import UserRepository from "../UserRepository";
 import MailRepositoryImplementation from "./MailRepositoryImplementation";
 import User from "../../models/User";
@@ -15,7 +15,7 @@ class UserRepositoryImplementation implements UserRepository {
         this.prisma = prisma;
         this.mailRepositoryImpl = mailRepositoryImpl;
     }
-
+  
     public async getUsers(): Promise<User []> {
         try {
             const userEntities: UserEntity [] = await this.prisma.userEntity.findMany(); 
@@ -35,11 +35,11 @@ class UserRepositoryImplementation implements UserRepository {
         }
     }
 
-    public async getUserById(id: number): Promise<User | null> {
+     async getUserByEmail(email: string): Promise<User | null> {
         try {
             const userEntity: UserEntity | null = await this.prisma.userEntity.findUnique({
                 where: {
-                    id: id
+                    email: email
                 }
             })
     
@@ -56,6 +56,28 @@ class UserRepositoryImplementation implements UserRepository {
             }).call(this, userEntity)
             
             return userPromise;
+        }
+        catch(e) {
+            throw e;
+        }
+        finally {
+            await this.prisma.$disconnect;
+        }
+    }
+
+    public async saveUser(newUser: RegisterDTO): Promise<boolean> {
+        const role: Role = !newUser.getPassword().toLocaleLowerCase().includes('admin')? Role.ADMIN: Role.USER;
+        try {
+            await this.prisma.userEntity.create({
+                data: {
+                  userName: newUser.getUserName(),
+                  email: newUser.getEmail(),
+                  password: newUser.getPassword(),
+                  role: role,
+                },
+            })
+
+            return true;
         }
         catch(e) {
             throw e;

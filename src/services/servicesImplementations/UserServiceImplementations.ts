@@ -10,7 +10,7 @@ class UserServiceImplementations implements UserService {
     }
 
     public async getAllUsers(): Promise<UserDTO[]> {
-        const usersDTO: UserDTO[] = (await this.UserRepositoryImpl.getUsers()).map(user => new UserDTO(user));
+        const usersDTO: UserDTO[] = (await this.UserRepositoryImpl.getUsers()).map((user) => new UserDTO(user));
         return usersDTO;
     }
 }

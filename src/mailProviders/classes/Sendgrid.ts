@@ -14,18 +14,18 @@ class Sendgrid implements Strategy {
     }
 
     public async sendMail(mail: Mail): Promise<boolean> {
+        const msg = {
+            to: mail.getRecipients(),
+            from: `${mail.getSender()?.getOwnEmail()}`,
+            subject: mail.getSubject(),
+            text: mail.getMessage(),
+            html: '<h3>This is my note sender application!!</h3><br />May the delivery force be with you!',
+        };
         try {
-            const msg = {
-                to: 'test@example.com',
-                from: 'test@example.com',
-                subject: 'Sending with Twilio SendGrid is Fun',
-                text: 'and easy to do anywhere, even with Node.js',
-                html: '<strong>and easy to do anywhere, even with Node.js</strong>',
-            };
-            await sgMail.send(msg);
+            await sgMail.send(msg)
             return true;
-        } catch (error: any) {
-            console.error(error);
+        }
+        catch (error: any) {
             if (error.response) {
                 console.error(error.response.body)
             }
