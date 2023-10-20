@@ -1,15 +1,21 @@
+import AuthService from '../AuthService'
 import LoginDTO from "../../dtos/LoginDTO";
 import EncrypterImpl from "../../encrypter/EncrypterImpl";
 import UserRepositoryImplementation from "../../repositories/repositoriesImplementations/UserRepositoryImplementation";
+import Jwtoken from "../../authMiddleware/Jwtoken";
+import User from "../../models/User";
+
 
 class AuthServiceImplementation implements AuthService {
 
     private userRepImpl: UserRepositoryImplementation;
     private encrypter: EncrypterImpl;
+    private jwt: Jwtoken;
 
-    public constructor (userRepImpl: UserRepositoryImplementation, encrypter: EncrypterImpl) {
+    public constructor (userRepImpl: UserRepositoryImplementation, encrypter: EncrypterImpl, jwt: Jwtoken) {
         this.userRepImpl = userRepImpl;
         this.encrypter = encrypter;
+        this.jwt = jwt;
     }
 
     public async register(newUser: RegisterDTO): Promise<boolean> {
@@ -17,7 +23,7 @@ class AuthServiceImplementation implements AuthService {
         if(!userIsOk){
             throw new Error("Not valid user. Send again.");
         }
-        if(this.registerDTOHasMissingFields(newUser)){
+        if(this.dtoHasMissingFields(newUser)){
             throw new Error('There are missing fields. It is not possible to register the user.');
         }
         if(!this.emailIsCorrect) {
@@ -31,14 +37,33 @@ class AuthServiceImplementation implements AuthService {
     }
 
 
-    login(): void {
-        
+    public async login(user: LoginDTO): Promise<AuthResponseDTO> {
+        let userIsOk: boolean = user && Object.keys(user).length === 0;
+        if(!userIsOk){
+            throw new Error("Not valid user. Send again.");
+        }
+        if(this.dtoHasMissingFields(user)){
+            throw new Error('There are missing fields. It is not possible to register the user.');
+        }
+        const savedUser: User | null = await this.userRepImpl.getUserByEmail(user.getEmail());
+        if(!savedUser) {
+            throw new Error('Please check your credentials and try again');
+        }
+        const passwordIsOk: boolean = await this.encrypter.validatePassword(user.getPassword(), user.getEmail())
+        if(!passwordIsOk) {
+            throw new Error('Please check your credentials and try again');
+        }
+        const token: string = this.jwt.createJwtToken(user.getUserName(), user.getEmail(), savedUser.getRole());
+
+        return new AuthResponseDTO(token);
     }
+
+
     logout(): void {
         throw new Error("Method not implemented.");
     }
 
-    private registerDTOHasMissingFields(user: RegisterDTO): boolean {
+    private dtoHasMissingFields(user: RegisterDTO | LoginDTO): boolean {
         return !user.hasOwnProperty('email') || 
                !user.hasOwnProperty('userName') ||
                !user.hasOwnProperty('password') ||
