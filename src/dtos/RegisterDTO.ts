@@ -1,4 +1,6 @@
-class RegisterDTO {
+import UncreatedUser from "./UncreatedUser.interface";
+
+class RegisterDTO implements UncreatedUser {
     private userName: string;
     private email: string;
     private password: string;
@@ -9,11 +11,11 @@ class RegisterDTO {
         this.userName = userName;
     }
 
-    public getEmail(): string {
+    getEmail(): string {
         return this.email;
     }
 
-    public getPassword(): string {
+    getPassword(): string {
         return this.password;
     }
 
@@ -25,3 +27,5 @@ class RegisterDTO {
         this.password = password;
     }
 }
+
+export default RegisterDTO;

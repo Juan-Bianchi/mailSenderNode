@@ -9,3 +9,5 @@ class AuthResponseDTO {
         return this.token;
     }
 }
+
+export default AuthResponseDTO;

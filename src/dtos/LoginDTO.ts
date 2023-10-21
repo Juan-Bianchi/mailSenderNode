@@ -1,4 +1,6 @@
-class LoginDTO {
+import UncreatedUser from "./UncreatedUser.interface";
+
+class LoginDTO implements UncreatedUser{
     private email: string;
     private userName: string;
     private password: string;

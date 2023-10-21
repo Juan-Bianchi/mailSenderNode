@@ -1,18 +1,20 @@
 import express from "express"
-const app = express()
-app.use(express.json()) // middleware que transforma la req.body a un json
+import authRouter from "./controllers/AuthController";
+import userRouter from "./controllers/UserController"
+import { PrismaClient } from "@prisma/client";
 
+const prisma = new PrismaClient();
 const PORT = 3000;
+const app = express()
 
-import mailRouter from './routes/mailRouter'
+app.use(express.json())
 
-app.get('/ping', (_req, res) => {
-    console.log("someone pinged here!!");
-    res.send('pong amigo!');
-})
-
-app.use('/api/mails', mailRouter);
+//controllers
+app.use('/api', authRouter);
+app.use('/api', userRouter);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 })
+
+export {prisma}

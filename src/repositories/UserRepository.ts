@@ -1,3 +1,4 @@
+import RegisterDTO from '../dtos/RegisterDTO';
 import User from '../models/User'
 
 interface UserRepository {

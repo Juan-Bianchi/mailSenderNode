@@ -1,19 +1,14 @@
-import { MailEntity, PrismaClient } from "@prisma/client";
+import { MailEntity } from "@prisma/client";
+import {prisma} from "../../index"
 import MailRepository from "../MailRepository";
 import Mail from "../../models/Mail";
 
 
 class MailRepositoryImplementation implements MailRepository {
-    private prisma: PrismaClient;
-
-    public constructor(prisma: PrismaClient) {
-        this.prisma = prisma;                 
-    }
 
     public async getMailById(id: number): Promise<Mail | null> {
-
         try {
-            const mailEntity: MailEntity | null = await this.prisma.mailEntity.findUnique({
+            const mailEntity: MailEntity | null = await prisma.mailEntity.findUnique({
                 where: {
                     id: id
                 }
@@ -29,7 +24,7 @@ class MailRepositoryImplementation implements MailRepository {
             throw e;
         }
         finally {
-            await this.prisma.$disconnect;
+            await prisma.$disconnect;
         }
     }
 
@@ -43,7 +38,7 @@ class MailRepositoryImplementation implements MailRepository {
             nextDay.setDate(nextDay.getDate() + 1);
             nextDay.setHours(0, 0, 0, 0);
             
-            const mailEntities: MailEntity[] = await this.prisma.mailEntity.findMany({
+            const mailEntities: MailEntity[] = await prisma.mailEntity.findMany({
                 where: {
                     date: {
                         gte: formattedDate,
@@ -60,13 +55,13 @@ class MailRepositoryImplementation implements MailRepository {
             throw e;
         }
         finally {
-            await this.prisma.$disconnect;
+            await prisma.$disconnect;
         }
     }
 
     public async getMailsByUserId(userId: number): Promise<Mail[]> {
         try {
-            const mailEntities: MailEntity[] = await this.prisma.mailEntity.findMany({
+            const mailEntities: MailEntity[] = await prisma.mailEntity.findMany({
                 where: {
                     userId: userId
                 }
@@ -76,9 +71,6 @@ class MailRepositoryImplementation implements MailRepository {
         }
         catch(e) {
             throw e;
-        }
-        finally {
-            await this.prisma.$disconnect;
         }
     }
 
