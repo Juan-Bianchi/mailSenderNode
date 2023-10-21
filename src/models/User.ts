@@ -31,6 +31,10 @@ class User {
         this.role = role;
     }
 
+    public setMails(mails: Mail[]): void {
+        this.mails = mails;
+    }
+
     public addMail(mail: Mail): void {
         this.mails.push(mail);
         mail.setSender(this);

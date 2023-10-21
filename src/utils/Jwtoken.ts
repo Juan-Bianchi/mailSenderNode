@@ -1,4 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken'
+import {Request} from 'express'
+import TokenValidationError from '../errors/TokenValidationError';
 
 class Jwtoken {
     
@@ -16,6 +18,14 @@ class Jwtoken {
             throw new Error('Not Jwt secret assigned in the system')
         }
         return jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
+    }
+
+    public getPayload(req: Request): JwtPayload {
+        const authHeader = req.headers["authorization"];
+        const token = authHeader && authHeader.split(" ")[1];
+        if (!token)
+            throw new TokenValidationError('Token not correct.');
+        return this.verifyJwtToken(token);
     }
 
 }

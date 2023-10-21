@@ -56,7 +56,6 @@ class Mailjet implements Strategy{
         }
         catch(e){
             throw e;
-            return false;
         }
     }
 }

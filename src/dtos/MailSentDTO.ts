@@ -3,12 +3,12 @@ import UserDTO from './UserDTO';
 import User from '../models/User'
 
 class MailSentDTO {
-    private id: number;
+    private id: number | undefined;
     private subject: string;
     private message: string;
     private recipients: string[];
     private date: Date;
-    private sender: UserDTO;
+    private sender: string;
 
     public constructor(mail: Mail) {
         this.subject = mail.getSubject();
@@ -16,7 +16,7 @@ class MailSentDTO {
         this.recipients = mail.getRecipients();
         this.date = mail.getDate();
         this.id = mail.getId() as number; 
-        this.sender = new UserDTO(mail.getSender() as User);
+        this.sender = mail.getSender()?.getOwnEmail() as string;
     }
 
     public getId(): number | undefined {
@@ -39,8 +39,12 @@ class MailSentDTO {
         return this.recipients;
     }
 
-    public getUserDTO(): UserDTO {
+    public getSender(): string{
         return this.sender;
+    }
+
+    public setSender(sender: string): void {
+        this.sender = sender;
     }
 }
 

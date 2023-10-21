@@ -19,6 +19,7 @@ userRouter.get('/users', checkToken, verifyAdminRole, async (_req: Request, res:
     }
 })
 
+
 export default userRouter
 
 

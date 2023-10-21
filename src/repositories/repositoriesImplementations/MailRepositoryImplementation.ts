@@ -2,6 +2,7 @@ import { MailEntity } from "@prisma/client";
 import {prisma} from "../../index"
 import MailRepository from "../MailRepository";
 import Mail from "../../models/Mail";
+import MailSentDTO from "../../dtos/MailSentDTO";
 
 
 class MailRepositoryImplementation implements MailRepository {
@@ -22,9 +23,6 @@ class MailRepositoryImplementation implements MailRepository {
         }
         catch(e) {
             throw e;
-        }
-        finally {
-            await prisma.$disconnect;
         }
     }
 
@@ -54,9 +52,6 @@ class MailRepositoryImplementation implements MailRepository {
         catch(e) {
             throw e;
         }
-        finally {
-            await prisma.$disconnect;
-        }
     }
 
     public async getMailsByUserId(userId: number): Promise<Mail[]> {
@@ -71,6 +66,23 @@ class MailRepositoryImplementation implements MailRepository {
         }
         catch(e) {
             throw e;
+        }
+    }
+
+    public async saveMail(mail: MailSentDTO, id: number): Promise<boolean> {
+        try {
+            await prisma.mailEntity.create({
+                data: {
+                    subject: mail.getSubject(),
+                    message: mail.getMessage(),
+                    recipients: mail.getRecipients(),
+                    userId: id as number,
+                },
+            })
+            return true;
+        }
+        catch(error) {
+            throw error;
         }
     }
 

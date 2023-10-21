@@ -2,7 +2,7 @@ import UserDTO from "../../dtos/UserDTO";
 import UserService from "../UserService";
 import UserRepositoryImplementation from "../../repositories/repositoriesImplementations/UserRepositoryImplementation";
 
-const userRep = new UserRepositoryImplementation;
+const userRep = new UserRepositoryImplementation();
 
 class UserServiceImplementations implements UserService {
     public async getAllUsers(): Promise<UserDTO[]> {

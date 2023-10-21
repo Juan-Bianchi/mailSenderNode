@@ -33,3 +33,5 @@ class Sendgrid implements Strategy {
         }
     }
 }
+
+export default Sendgrid;

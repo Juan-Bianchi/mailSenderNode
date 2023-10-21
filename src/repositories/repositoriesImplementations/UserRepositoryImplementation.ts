@@ -54,6 +54,34 @@ class UserRepositoryImplementation implements UserRepository {
 
     }
 
+    public async getUserById(id: number): Promise<User | null> {
+        try {
+            const userEntity: UserEntity | null = await prisma.userEntity.findUnique({
+                where: {
+                    id: id
+                }
+            })
+    
+            if(!userEntity)
+              return userEntity;
+    
+            const userPromise: Promise<User> = (async function (this: UserRepositoryImplementation, userEntity: UserEntity) {
+                const mails: Mail [] = await mailRep.getMailsByUserId(userEntity.id);
+                const user: User =  new User(userEntity.email, userEntity.userName, userEntity.password,
+                mails, userEntity.role, userEntity.id);
+        
+                return user;
+            
+            }).call(this, userEntity)
+            
+            return userPromise;
+        }
+        catch(e) {
+            throw e;
+        }
+
+    }
+
     public async saveUser(newUser: RegisterDTO): Promise<boolean> {
         const role: Role = newUser.getUserName().toLocaleLowerCase().includes('admin')? Role.ADMIN: Role.USER;
         try {
@@ -69,6 +97,26 @@ class UserRepositoryImplementation implements UserRepository {
         }
         catch(e) {
             throw e;
+        }
+    }
+
+    public async updateUser(user: User): Promise<void> {
+        try {
+            await prisma.userEntity.update({
+                where: {
+                  email: user.getOwnEmail(),
+                },
+                data: {
+                    userName: user.getUserName(),
+                    email: user.getOwnEmail(),
+                    password: user.getPassword(),
+                    role: user.getRole(),
+                    sentMails: user.getSentMails()
+                },
+              })
+        }
+        catch(error) {
+            throw error;
         }
     }
 

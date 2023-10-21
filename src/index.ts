@@ -1,6 +1,7 @@
 import express from "express"
 import authRouter from "./controllers/AuthController";
-import userRouter from "./controllers/UserController"
+import userRouter from "./controllers/UserController";
+import mailRouter from "./controllers/MailController";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -12,6 +13,7 @@ app.use(express.json())
 //controllers
 app.use('/api', authRouter);
 app.use('/api', userRouter);
+app.use('/api', mailRouter);
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
