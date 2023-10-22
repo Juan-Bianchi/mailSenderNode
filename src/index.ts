@@ -2,9 +2,7 @@ import express from "express"
 import authRouter from "./controllers/AuthController";
 import userRouter from "./controllers/UserController";
 import mailRouter from "./controllers/MailController";
-import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
 const PORT = 3000;
 const app = express()
 
@@ -19,4 +17,3 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 })
 
-export {prisma}

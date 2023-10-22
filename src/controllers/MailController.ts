@@ -4,7 +4,6 @@ import MailServiceImplementation from '../services/servicesImplementations/MailS
 import MailSentDTO from '../dtos/MailSentDTO';
 import Jwtoken from '../utils/Jwtoken';
 import { JwtPayload } from 'jsonwebtoken';
-import Mail from '../models/Mail';
 import PostVerbError from '../errors/PostVerbError';
 import TokenValidationError from '../errors/TokenValidationError';
 import GetVerbError from '../errors/GetVerbError';

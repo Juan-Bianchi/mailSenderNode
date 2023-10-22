@@ -33,7 +33,7 @@ class AuthServiceImplementation implements AuthService {
             throw new RegisterError('Password requires 1 uppercase, 1 lowercase, 1 digit, 1 special character, min. 8 characters.');
         }
         newUser.setPassword(await encrypter.encrypt(newUser.getPassword()));
-        return await userRep.saveUser(newUser);
+        return await userRep.saveUser(newUser) !== null;
     }
 
 

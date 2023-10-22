@@ -11,22 +11,13 @@ import SendingPovider from "../../mailProviders/classes/SendingProvider";
 import PostVerbError from "../../errors/PostVerbError";
 import Strategy from "../../mailProviders/interface/Strategy";
 import Sendgrid from "../../mailProviders/classes/Sendgrid";
-import {prisma} from '../../index'
+import prisma from "../../../database/client";
 import { Request } from "express";
 
 const mailRep = new MailRepositoryImplementation();
 const userRep = new UserRepositoryImplementation();
 
 class MailServiceImplementation implements MailService{
-
-    public async getMailById(id: number): Promise<MailSentDTO | null> {
-        const mail: Mail | null = await mailRep.getMailById(id);
-        if(!mail)
-            throw new GetVerbError('Mail id not found. Please check and try again.');
-
-        const mailSentDTO: MailSentDTO = new MailSentDTO(mail);
-        return mailSentDTO
-    }
 
     public async getMailsByDateAndId(id: number, date: Date): Promise<MailSentDTO[]> {
         const mails: Mail [] = await mailRep.getMailsByDateAndId(id, date);
@@ -45,7 +36,7 @@ class MailServiceImplementation implements MailService{
                 throw new GetVerbError('Not user found with this id.');
             }
 
-            const newMail = new Mail(mail.getSubject(), mail.getMessage(), mail.getRecipients());
+            const newMail = new Mail(mail.getSubject(), mail.getMessage(), mail.getRecipients(), mail.getDate());
             newMail.setSender(user);
             let strategy: Strategy = new Mailjet();
             const mailSender: SendingPovider = new SendingPovider(strategy);
@@ -73,10 +64,11 @@ class MailServiceImplementation implements MailService{
             sender,
             subject,
             message,
-            recipients
+            recipients,
+            date
         } = req.body;
         
-        const mail: Mail = new Mail(subject, message, recipients);
+        const mail: Mail = new Mail(subject, message, recipients, date);
         const mailDto = new MailSentDTO(mail);
         mailDto.setSender(sender);
         return mailDto; 

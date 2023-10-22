@@ -1,30 +1,11 @@
 import { MailEntity } from "@prisma/client";
-import {prisma} from "../../index"
+import prisma from "../../../database/client";
 import MailRepository from "../MailRepository";
 import Mail from "../../models/Mail";
 import MailSentDTO from "../../dtos/MailSentDTO";
 
 
 class MailRepositoryImplementation implements MailRepository {
-
-    public async getMailById(id: number): Promise<Mail | null> {
-        try {
-            const mailEntity: MailEntity | null = await prisma.mailEntity.findUnique({
-                where: {
-                    id: id
-                }
-            })
-    
-            if(!mailEntity)
-                return mailEntity;
-    
-            const mail: Mail = new Mail(mailEntity.subject, mailEntity.message, mailEntity.recipients, mailEntity?.id);
-            return mail;
-        }
-        catch(e) {
-            throw e;
-        }
-    }
 
     public async getMailsByDateAndId(id: number, date: Date ) : Promise<Mail[]> {
         try {
@@ -46,7 +27,7 @@ class MailRepositoryImplementation implements MailRepository {
                 }
             });
     
-            const mails: Mail[] = mailEntities.map(mail => new Mail(mail.subject, mail.message, mail.recipients, mail?.id));
+            const mails: Mail[] = mailEntities.map(mail => new Mail(mail.subject, mail.message, mail.recipients, mail.date, mail?.id));
             return mails;
         }
         catch(e) {
@@ -61,7 +42,7 @@ class MailRepositoryImplementation implements MailRepository {
                     userId: userId
                 }
             });
-            const mails: Mail[] = mailEntities.map(mail => new Mail(mail.subject, mail.message, mail.recipients, mail?.id));
+            const mails: Mail[] = mailEntities.map(mail => new Mail(mail.subject, mail.message, mail.recipients, mail.date, mail?.id));
             return mails;
         }
         catch(e) {
@@ -69,9 +50,9 @@ class MailRepositoryImplementation implements MailRepository {
         }
     }
 
-    public async saveMail(mail: MailSentDTO, id: number): Promise<boolean> {
+    public async saveMail(mail: MailSentDTO, id: number): Promise<MailEntity> {
         try {
-            await prisma.mailEntity.create({
+            const mailEntity: MailEntity = await prisma.mailEntity.create({
                 data: {
                     subject: mail.getSubject(),
                     message: mail.getMessage(),
@@ -79,7 +60,7 @@ class MailRepositoryImplementation implements MailRepository {
                     userId: id as number,
                 },
             })
-            return true;
+            return mailEntity;
         }
         catch(error) {
             throw error;

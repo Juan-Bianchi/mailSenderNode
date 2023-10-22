@@ -8,17 +8,21 @@ class Mail {
     private recipients: string[];
     private date: Date;
 
-    public constructor(subject: string, message: string, recipients: string[], id?: number) {
+    public constructor(subject: string, message: string, recipients: string[], date: Date, id?: number) {
         this.subject = subject;
         this.message = message;
         this.recipients = recipients;
-        this.date = new Date();
+        this.date = date;
 
         this.id = id; // optional
     }
 
     public setSender(user: User): void {
         this.sender = user;
+    }
+
+    public setDate(date: Date): void {
+        this.date = date;
     }
 
     public getId(): number | undefined {

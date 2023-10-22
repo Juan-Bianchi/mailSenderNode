@@ -3,7 +3,7 @@ import UserRepository from "../UserRepository";
 import MailRepositoryImplementation from "./MailRepositoryImplementation";
 import User from "../../models/User";
 import Mail from "../../models/Mail";
-import {prisma} from '../../index'
+import prisma from "../../../database/client";
 import RegisterDTO from "../../dtos/RegisterDTO";
 
 const mailRep = new MailRepositoryImplementation();
@@ -82,10 +82,10 @@ class UserRepositoryImplementation implements UserRepository {
 
     }
 
-    public async saveUser(newUser: RegisterDTO): Promise<boolean> {
+    public async saveUser(newUser: RegisterDTO): Promise<UserEntity> {
         const role: Role = newUser.getUserName().toLocaleLowerCase().includes('admin')? Role.ADMIN: Role.USER;
         try {
-            await prisma.userEntity.create({
+            const user: UserEntity = await prisma.userEntity.create({
                 data: {
                   userName: newUser.getUserName(),
                   email: newUser.getEmail(),
@@ -93,7 +93,7 @@ class UserRepositoryImplementation implements UserRepository {
                   role: role,
                 },
             })
-            return true;
+            return user;
         }
         catch(e) {
             throw e;
