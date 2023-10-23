@@ -7,6 +7,7 @@ import PasswordValidationError from '../errors/PasswordValidationError';
 import TokenValidationError from '../errors/TokenValidationError';
 import RegisterError from '../errors/RegisterError';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import ConstraintError from '../errors/ConstraintError';
 
 const authService = new AuthServiceImplementation();
 const authRouter = Router()
@@ -24,7 +25,9 @@ authRouter.post('/register', async (req: Request, res: Response) => {
         res.status(201).json(user);
     }
     catch(error) {
-        if(error instanceof RegisterError || error instanceof PrismaClientKnownRequestError)
+        if(error instanceof RegisterError ||
+           error instanceof PrismaClientKnownRequestError || 
+           error instanceof ConstraintError)
             res.status(403).send(error.message);
         else
             res.status(403).send(error);

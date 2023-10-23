@@ -7,7 +7,7 @@ interface UserRepository {
     getUserByEmail(email: string): Promise<User | null>;
     getUserById(id: number): Promise<User | null>;
     saveUser(newUser: RegisterDTO): Promise<UserEntity>;
-    updateUser(user: User): Promise<void>;
+    updateUser(user: User): Promise< UserEntity>;
 }
 
 export default UserRepository;

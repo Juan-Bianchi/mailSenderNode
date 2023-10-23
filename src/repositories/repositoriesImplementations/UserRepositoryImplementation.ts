@@ -5,6 +5,8 @@ import User from "../../models/User";
 import Mail from "../../models/Mail";
 import prisma from "../../../database/client";
 import RegisterDTO from "../../dtos/RegisterDTO";
+import ConstraintError from "../../errors/ConstraintError";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const mailRep = new MailRepositoryImplementation();
 
@@ -90,19 +92,23 @@ class UserRepositoryImplementation implements UserRepository {
                   userName: newUser.getUserName(),
                   email: newUser.getEmail(),
                   password: newUser.getPassword(),
-                  role: role,
+                  role: role
                 },
             })
             return user;
         }
-        catch(e) {
-            throw e;
+        catch(error) {
+            if(error instanceof PrismaClientKnownRequestError){
+                console.log('prueba')
+                throw new ConstraintError('User could not be registered, already a user with the email given.')
+            }
+            throw error;
         }
     }
 
-    public async updateUser(user: User): Promise<void> {
+    public async updateUser(user: User): Promise<UserEntity> {
         try {
-            await prisma.userEntity.update({
+            const userUpdated: UserEntity = await prisma.userEntity.update({
                 where: {
                   email: user.getOwnEmail(),
                 },
@@ -110,10 +116,10 @@ class UserRepositoryImplementation implements UserRepository {
                     userName: user.getUserName(),
                     email: user.getOwnEmail(),
                     password: user.getPassword(),
-                    role: user.getRole(),
-                    sentMails: user.getSentMails()
+                    role: user.getRole()
                 },
               })
+              return userUpdated;
         }
         catch(error) {
             throw error;

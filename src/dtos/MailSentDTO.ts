@@ -43,6 +43,10 @@ class MailSentDTO {
         return this.sender;
     }
 
+    public setId(id: number): void {
+        this.id = id;
+    }
+
     public setSender(sender: string): void {
         this.sender = sender;
     }

@@ -7,7 +7,6 @@ class UserDTO {
     private ownEmail: string;
     private userName: string;
     private mails: MailSentDTO[];
-    private sentEmails: number;
     private role: Role;
     
     
@@ -16,7 +15,6 @@ class UserDTO {
         this.userName = user.getUserName();
         this.mails = user.getMails().map(mail => new MailSentDTO(mail));
         this.role = user.getRole();
-        this.sentEmails = user.getSentMails();
         this.id = user.getId() as number;
     }
 
@@ -35,11 +33,7 @@ class UserDTO {
     public getMails(): MailSentDTO[] {
         return this.mails;
     }
-
-    public getSentMails(): number {
-        return this.sentEmails;
-    }
-
+    
     public getRoles(): Role {
         return this.role;
     }

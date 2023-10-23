@@ -17,6 +17,10 @@ class Mail {
         this.id = id; // optional
     }
 
+    public setId(id: number) {
+        this.id = id;
+    }
+
     public setSender(user: User): void {
         this.sender = user;
     }

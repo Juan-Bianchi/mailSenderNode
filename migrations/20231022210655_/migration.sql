@@ -19,8 +19,8 @@ CREATE TABLE "UserEntity" (
     "email" TEXT NOT NULL,
     "userName" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "sentMails" INTEGER NOT NULL DEFAULT 0,
-    "role" "Role"[],
+    "sentMails" INTEGER NOT NULL,
+    "role" "Role" NOT NULL,
 
     CONSTRAINT "UserEntity_pkey" PRIMARY KEY ("id")
 );

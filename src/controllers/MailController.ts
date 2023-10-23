@@ -7,6 +7,7 @@ import { JwtPayload } from 'jsonwebtoken';
 import PostVerbError from '../errors/PostVerbError';
 import TokenValidationError from '../errors/TokenValidationError';
 import GetVerbError from '../errors/GetVerbError';
+import ConstraintError from '../errors/ConstraintError';
 
 const mailRouter = Router();
 const mailService = new MailServiceImplementation();
@@ -22,7 +23,8 @@ mailRouter.post('/mails', checkToken, (req: Request, res: Response) => {
     catch (error){
         if(error instanceof PostVerbError ||
            error instanceof TokenValidationError ||
-           error instanceof GetVerbError) {
+           error instanceof GetVerbError ||
+           error instanceof ConstraintError) {
                 res.status(403).send(error.message);
            }
         else {

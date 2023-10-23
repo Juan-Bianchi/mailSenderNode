@@ -3,6 +3,8 @@ import prisma from "../../../database/client";
 import MailRepository from "../MailRepository";
 import Mail from "../../models/Mail";
 import MailSentDTO from "../../dtos/MailSentDTO";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import ConstraintError from "../../errors/ConstraintError";
 
 
 class MailRepositoryImplementation implements MailRepository {
@@ -50,19 +52,22 @@ class MailRepositoryImplementation implements MailRepository {
         }
     }
 
-    public async saveMail(mail: MailSentDTO, id: number): Promise<MailEntity> {
+    public async saveMail(mail: MailSentDTO, userId: number): Promise<MailEntity> {
         try {
             const mailEntity: MailEntity = await prisma.mailEntity.create({
                 data: {
                     subject: mail.getSubject(),
                     message: mail.getMessage(),
                     recipients: mail.getRecipients(),
-                    userId: id as number,
+                    userId: userId as number,
                 },
             })
             return mailEntity;
         }
         catch(error) {
+            if(error instanceof PrismaClientKnownRequestError){
+                throw new ConstraintError('There is a unique constraint that is being violated.')
+            }
             throw error;
         }
     }

@@ -35,7 +35,10 @@ class MailServiceImplementation implements MailService{
             if(user === null || user.getId() === null ) {
                 throw new GetVerbError('Not user found with this id.');
             }
-
+            const mailsAmount: number = (await mailRep.getMailsByDateAndId(user.getId() as number, new Date())).length
+            if(mailsAmount >= 100) {
+                throw new PostVerbError('Mail could not be sent. You have exceeded the maximum amount of sent emails for today.');
+            }
             const newMail = new Mail(mail.getSubject(), mail.getMessage(), mail.getRecipients(), mail.getDate());
             newMail.setSender(user);
             let strategy: Strategy = new Mailjet();
@@ -51,9 +54,7 @@ class MailServiceImplementation implements MailService{
 
             await mailRep.saveMail(mail, user.getId() as number);
             user.setMails(await mailRep.getMailsByUserId(user.getId() as number));
-            user.setSentMails(user.getSentMails() + 1)
             await userRep.updateUser(user);
-
             return true;
         })
         return transactionResult;

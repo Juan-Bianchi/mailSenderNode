@@ -6,6 +6,13 @@ module.exports = {
   coveragePathIgnorePatterns: [
     '/node_modules/',
     'jest.config.js',
-    'tsconfig.json'
+    'tsconfig.json',
+    '/migrations/',
+    '/database/',
+    '/build/',
+    'env',
+    'package-lock.json',
+    'package.json',
+    'schema.prisma'
   ]
 };

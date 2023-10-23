@@ -9,6 +9,7 @@ import RegisterDTO from '../../dtos/RegisterDTO';
 import UncreatedUser from '../../dtos/UncreatedUser.interface';
 import LoginError from '../../errors/LoginError';
 import RegisterError from '../../errors/RegisterError';
+import prisma from '../../../database/client';
 
 
 const userRep = new UserRepositoryImplementation();
@@ -19,21 +20,24 @@ const jwt = new Jwtoken();
 class AuthServiceImplementation implements AuthService {
 
     public async register(newUser: RegisterDTO): Promise<boolean> {
-        let userIsOk: boolean = newUser && Object.keys(newUser).length !== 0;
-        if(!userIsOk){
-            throw new RegisterError("Not valid user. Send again.");
-        }
-        if(this.dtoHasMissingFields(newUser)){
-            throw new RegisterError('There are missing fields. It is not possible to register the user.');
-        }
-        if(!this.emailIsCorrect) {
-            throw new RegisterError('The email given is not correct. Please, provide a different one');
-        }
-        if(!this.passwordIsCorrect) {
-            throw new RegisterError('Password requires 1 uppercase, 1 lowercase, 1 digit, 1 special character, min. 8 characters.');
-        }
-        newUser.setPassword(await encrypter.encrypt(newUser.getPassword()));
-        return await userRep.saveUser(newUser) !== null;
+        const transactionResult: boolean = await prisma.$transaction(async () => {
+            let userIsOk: boolean = newUser && Object.keys(newUser).length !== 0;
+            if(!userIsOk){
+                throw new RegisterError("Not valid user. Send again.");
+            }
+            if(this.dtoHasMissingFields(newUser)){
+                throw new RegisterError('There are missing fields. It is not possible to register the user.');
+            }
+            if(!this.emailIsCorrect) {
+                throw new RegisterError('The email given is not correct. Please, provide a different one');
+            }
+            if(!this.passwordIsCorrect) {
+                throw new RegisterError('Password requires 1 uppercase, 1 lowercase, 1 digit, 1 special character, min. 8 characters.');
+            }
+            newUser.setPassword(await encrypter.encrypt(newUser.getPassword()));
+            return await userRep.saveUser(newUser) !== null;
+        })
+        return transactionResult;
     }
 
 
