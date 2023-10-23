@@ -5,20 +5,18 @@ import Mail from '../../models/Mail';
 
 class Mailjet implements Strategy{
     private mailjet: Client;
-    private lastStatus: string;
 
     public constructor(){
         this.mailjet = new Client({
             apiKey: process.env.MJ_APIKEY_PUBLIC,
             apiSecret: process.env.MJ_APIKEY_PRIVATE
         });
-        this.lastStatus = 'NOTHING SENT YET';
     }
 
     public async sendMail(mail: Mail): Promise<boolean> {
 
         try{
-            const recipients = mail.getRecipients().map(recipient => {
+            const recipients = mail.recipients.map(recipient => {
                 return {
                     Email: `${recipient}`
                 }
@@ -28,16 +26,16 @@ class Mailjet implements Strategy{
                 Messages: [
                     {
                     From: {
-                        Email: `${mail.getSender()?.getOwnEmail()}`,
+                        Email: `${mail.sender?.ownEmail}`,
                         Name: 'Mailjet Sender'
                     },
                     To: [
                         ... recipients
                     ],
                     
-                    Subject: mail.getSubject(),
+                    Subject: mail.subject,
                     HTMLPart: '<h3>This is my note sender application!!</h3><br />May the delivery force be with you!',
-                    TextPart: mail.getMessage(),
+                    TextPart: mail.message,
                     },
                 ]
             };
@@ -49,7 +47,6 @@ class Mailjet implements Strategy{
             return await (async ()=> {
                     const {Status: status} = result.body.Messages[0];
                     console.log(status);
-                    this.lastStatus = status.toLocaleUpperCase();
 
                     return status.includes('success')
             })();

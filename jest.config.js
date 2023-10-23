@@ -2,7 +2,7 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  setupFilesAfterEnv: ['<rootDir>/database/singleton.ts'],
+  //setupFilesAfterEnv: ['<rootDir>/database/singleton.ts'],
   coveragePathIgnorePatterns: [
     '/node_modules/',
     'jest.config.js',

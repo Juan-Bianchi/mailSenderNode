@@ -1,8 +1,12 @@
-import { MailEntity } from "@prisma/client";
-import Mail from "../../src/models/Mail";
-import MailSentDTO from "../../src/dtos/MailSentDTO";
-import MailRepositoryImplementation from "../../src/repositories/repositoriesImplementations/MailRepositoryImplementation";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+/*import { prismaMock } from '../../database/singleton'
+import MailRepositoryImplementation from '../../src/repositories/repositoriesImplementations/MailRepositoryImplementation'
+import Mail from '../../src/models/Mail';
+import MailSentDTO from '../../src/dtos/MailSentDTO';
+import { MailEntity } from '@prisma/client';
+import {expect, jest} from '@jest/globals';
+import GetVerbError from '../../src/errors/GetVerbError';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+
 
 const mailRep = new MailRepositoryImplementation();
 let mailEntity: MailEntity;
@@ -29,12 +33,17 @@ beforeEach(()=> {
     mailDto2 = new MailSentDTO(mail2);
 })
 
+afterEach(() => {
+    // restore replaced property
+    jest.restoreAllMocks();
+});
+
 
 describe('saveMail', () => {
     it('should save a new Mail', async () => {
+        prismaMock.mailEntity.create.mockResolvedValue(mailEntity)
         expect.assertions(1);
-        const mail = await mailRep.saveMail(mailDto, mailEntity.userId)
-        expect(mail).toEqual(mailEntity);
+        expect(await mailRep.saveMail(mailDto, mailEntity.userId)).toEqual(mailEntity);
     })
 })
 
@@ -48,12 +57,17 @@ describe('saveMail', () => {
                 clientVersion: '2.19.0'
             });
         
-        expect.assertions(1);
-        await expect(mailRep.saveMail(mailDto, mailEntity.userId)).rejects.toThrowError(error);        
+        expect.assertions(2);
+        prismaMock.mailEntity.create.mockRejectedValue(error);
+        await expect(mailRep.saveMail(mailDto, mailEntity.userId)).rejects.toThrowError();
+        error = new Error('Unknonwn error')
+        prismaMock.mailEntity.create.mockRejectedValue(error);
+        await expect(mailRep.saveMail(mailDto, mailEntity.userId)).rejects.toThrowError();
+        
     })
 })
 
-/*
+
 describe('getMailsByDateAndId', () => {
     it('should get Mails from a User on a date', async () => {
 
@@ -132,4 +146,6 @@ describe('getMailsByUserId', () => {
         prismaMock.mailEntity.findMany.mockRejectedValue(new GetVerbError('Error while retrieving mails'));
         await expect(mailRep.getMailsByUserId(userId)).rejects.toThrowError();
     })
-})*/
+})
+*/
+

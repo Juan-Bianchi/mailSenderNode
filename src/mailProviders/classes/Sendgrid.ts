@@ -15,10 +15,10 @@ class Sendgrid implements Strategy {
 
     public async sendMail(mail: Mail): Promise<boolean> {
         const msg = {
-            to: mail.getRecipients(),
-            from: `${mail.getSender()?.getOwnEmail()}`,
-            subject: mail.getSubject(),
-            text: mail.getMessage(),
+            to: mail.recipients,
+            from: `${mail.sender?.ownEmail}`,
+            subject: mail.subject,
+            text: mail.message,
             html: '<h3>This is my note sender application!!</h3><br />May the delivery force be with you!',
         };
         try {

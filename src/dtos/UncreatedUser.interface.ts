@@ -1,7 +1,7 @@
 interface UncreatedUser {
-    getEmail(): string
-    getPassword(): string
-    getUserName(): string
+    email: string;
+    userName: string;
+    password: string; 
 }
 
 export default UncreatedUser

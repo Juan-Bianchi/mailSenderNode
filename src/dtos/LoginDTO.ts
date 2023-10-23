@@ -1,9 +1,9 @@
 import UncreatedUser from "./UncreatedUser.interface";
 
 class LoginDTO implements UncreatedUser{
-    private email: string;
-    private userName: string;
-    private password: string;
+    email: string;
+    userName: string;
+    password: string;
 
     public constructor(userName: string, email: string, password: string) {
         this.email = email;
@@ -11,17 +11,6 @@ class LoginDTO implements UncreatedUser{
         this.password = password;
     }
 
-    public getEmail(): string {
-        return this.email;
-    }
-
-    public getUserName(): string {
-        return this.userName;
-    }
-
-    public getPassword(): string {
-        return this.password;
-    }
 }
 
 export default LoginDTO;

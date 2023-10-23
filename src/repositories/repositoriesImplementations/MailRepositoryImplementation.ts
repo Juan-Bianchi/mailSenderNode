@@ -9,7 +9,7 @@ import ConstraintError from "../../errors/ConstraintError";
 
 class MailRepositoryImplementation implements MailRepository {
 
-    public async getMailsByDateAndId(id: number, date: Date ) : Promise<Mail[]> {
+    async getMailsByDateAndId(id: number, date: Date ) : Promise<Mail[]> {
         try {
             // inicio
             const formattedDate = new Date(date);
@@ -28,8 +28,9 @@ class MailRepositoryImplementation implements MailRepository {
                     userId: id
                 }
             });
+            
     
-            const mails: Mail[] = mailEntities.map(mail => new Mail(mail.subject, mail.message, mail.recipients, mail.date, mail?.id));
+            const mails: Mail[] = mailEntities.map(mail => new Mail(mail.subject, mail.message, mail.recipients, mail.date, mail.id));
             return mails;
         }
         catch(e) {
@@ -37,14 +38,14 @@ class MailRepositoryImplementation implements MailRepository {
         }
     }
 
-    public async getMailsByUserId(userId: number): Promise<Mail[]> {
+    async getMailsByUserId(userId: number): Promise<Mail[]> {
         try {
             const mailEntities: MailEntity[] = await prisma.mailEntity.findMany({
                 where: {
                     userId: userId
                 }
             });
-            const mails: Mail[] = mailEntities.map(mail => new Mail(mail.subject, mail.message, mail.recipients, mail.date, mail?.id));
+            const mails: Mail[] = mailEntities.map(mail => new Mail(mail.subject, mail.message, mail.recipients, mail.date, mail.id));
             return mails;
         }
         catch(e) {
@@ -52,13 +53,13 @@ class MailRepositoryImplementation implements MailRepository {
         }
     }
 
-    public async saveMail(mail: MailSentDTO, userId: number): Promise<MailEntity> {
+    async saveMail(mail: MailSentDTO, userId: number): Promise<MailEntity> {
         try {
             const mailEntity: MailEntity = await prisma.mailEntity.create({
                 data: {
-                    subject: mail.getSubject(),
-                    message: mail.getMessage(),
-                    recipients: mail.getRecipients(),
+                    subject: mail.subject,
+                    message: mail.message,
+                    recipients: mail.recipients,
                     userId: userId as number,
                 },
             })

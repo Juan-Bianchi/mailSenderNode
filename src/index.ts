@@ -14,6 +14,6 @@ app.use('/api', userRouter);
 app.use('/api', mailRouter);
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`)
 })
 

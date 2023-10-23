@@ -19,7 +19,7 @@ const jwt = new Jwtoken();
 
 class AuthServiceImplementation implements AuthService {
 
-    public async register(newUser: RegisterDTO): Promise<boolean> {
+    async register(newUser: RegisterDTO): Promise<boolean> {
         const transactionResult: boolean = await prisma.$transaction(async () => {
             let userIsOk: boolean = newUser && Object.keys(newUser).length !== 0;
             if(!userIsOk){
@@ -34,14 +34,14 @@ class AuthServiceImplementation implements AuthService {
             if(!this.passwordIsCorrect) {
                 throw new RegisterError('Password requires 1 uppercase, 1 lowercase, 1 digit, 1 special character, min. 8 characters.');
             }
-            newUser.setPassword(await encrypter.encrypt(newUser.getPassword()));
+            newUser.password = await encrypter.encrypt(newUser.password);
             return await userRep.saveUser(newUser) !== null;
         })
         return transactionResult;
     }
 
 
-    public async login(user: LoginDTO): Promise<AuthResponseDTO> {
+    async login(user: LoginDTO): Promise<AuthResponseDTO> {
         let userIsOk: boolean = user && Object.keys(user).length !== 0;
         if(!userIsOk){
             throw new LoginError("Not valid user. Send again.");
@@ -49,15 +49,15 @@ class AuthServiceImplementation implements AuthService {
         if(this.dtoHasMissingFields(user)){
             throw new LoginError('There are missing fields. It is not possible to register the user.');
         }
-        const savedUser: User | null = await userRep.getUserByEmail(user.getEmail());
+        const savedUser: User | null = await userRep.getUserByEmail(user.email);
         if(!savedUser) {
             throw new LoginError('Please check your credentials and try again');
         }
-        const passwordIsOk: boolean = await encrypter.validatePassword(user.getPassword(), user.getEmail())
+        const passwordIsOk: boolean = await encrypter.validatePassword(user.password, user.email)
         if(!passwordIsOk) {
             throw new LoginError('Please check your credentials and try again');
         }
-        const token: string = jwt.createJwtToken(user.getUserName(), user.getEmail(), savedUser.getRole());
+        const token: string = jwt.createJwtToken(user.userName, user.email, savedUser.role);
 
         return new AuthResponseDTO(token);
     }
@@ -71,8 +71,8 @@ class AuthServiceImplementation implements AuthService {
         return !user.hasOwnProperty('email') || 
                !user.hasOwnProperty('userName') ||
                !user.hasOwnProperty('password') ||
-                user.getEmail() === null || user.getPassword() === null ||
-                user.getUserName() === null;
+                user.email === null || user.password === null ||
+                user.userName === null;
     }
 
     private emailIsCorrect(email: string): boolean {

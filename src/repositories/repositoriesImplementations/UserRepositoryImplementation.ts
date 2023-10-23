@@ -12,7 +12,7 @@ const mailRep = new MailRepositoryImplementation();
 
 class UserRepositoryImplementation implements UserRepository {
     
-    public async getUsers(): Promise<User []> {
+    async getUsers(): Promise<User []> {
         try {
             const userEntities: UserEntity [] = await prisma.userEntity.findMany(); 
             const usersPromises: Promise<User>[] =  userEntities.map(async (userEntity) => {
@@ -28,7 +28,7 @@ class UserRepositoryImplementation implements UserRepository {
         }
     }
 
-    public async getUserByEmail(email: string): Promise<User | null> {
+    async getUserByEmail(email: string): Promise<User | null> {
         try {
             const userEntity: UserEntity | null = await prisma.userEntity.findUnique({
                 where: {
@@ -56,7 +56,7 @@ class UserRepositoryImplementation implements UserRepository {
 
     }
 
-    public async getUserById(id: number): Promise<User | null> {
+    async getUserById(id: number): Promise<User | null> {
         try {
             const userEntity: UserEntity | null = await prisma.userEntity.findUnique({
                 where: {
@@ -84,14 +84,14 @@ class UserRepositoryImplementation implements UserRepository {
 
     }
 
-    public async saveUser(newUser: RegisterDTO): Promise<UserEntity> {
-        const role: Role = newUser.getUserName().toLocaleLowerCase().includes('admin')? Role.ADMIN: Role.USER;
+    async saveUser(newUser: RegisterDTO): Promise<UserEntity> {
+        const role: Role = newUser.userName.toLocaleLowerCase().includes('admin')? Role.ADMIN: Role.USER;
         try {
             const user: UserEntity = await prisma.userEntity.create({
                 data: {
-                  userName: newUser.getUserName(),
-                  email: newUser.getEmail(),
-                  password: newUser.getPassword(),
+                  userName: newUser.userName,
+                  email: newUser.email,
+                  password: newUser.password,
                   role: role
                 },
             })
@@ -106,17 +106,17 @@ class UserRepositoryImplementation implements UserRepository {
         }
     }
 
-    public async updateUser(user: User): Promise<UserEntity> {
+    async updateUser(user: User): Promise<UserEntity> {
         try {
             const userUpdated: UserEntity = await prisma.userEntity.update({
                 where: {
-                  email: user.getOwnEmail(),
+                  email: user.ownEmail,
                 },
                 data: {
-                    userName: user.getUserName(),
-                    email: user.getOwnEmail(),
-                    password: user.getPassword(),
-                    role: user.getRole()
+                    userName: user.userName,
+                    email: user.ownEmail,
+                    password: user.password,
+                    role: user.role
                 },
               })
               return userUpdated;

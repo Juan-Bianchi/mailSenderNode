@@ -5,7 +5,7 @@ import UserRepositoryImplementation from "../../repositories/repositoriesImpleme
 const userRep = new UserRepositoryImplementation();
 
 class UserServiceImplementations implements UserService {
-    public async getAllUsers(): Promise<UserDTO[]> {
+    async getAllUsers(): Promise<UserDTO[]> {
         const usersDTO: UserDTO[] = (await userRep.getUsers()).map((user) => new UserDTO(user));
         return usersDTO;
     }

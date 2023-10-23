@@ -4,7 +4,7 @@ import TokenValidationError from '../errors/TokenValidationError';
 
 class Jwtoken {
     
-    public createJwtToken(user: string, email: string, role: string): string {
+    createJwtToken(user: string, email: string, role: string): string {
         if(!process.env.JWT_SECRET){
             throw new Error('Not Jwt secret assigned in the system')
         }
@@ -12,7 +12,7 @@ class Jwtoken {
         return token;
     }
 
-    public verifyJwtToken(token: string): JwtPayload {
+    verifyJwtToken(token: string): JwtPayload {
         let isVerified: boolean;
         if(!process.env.JWT_SECRET){
             throw new Error('Not Jwt secret assigned in the system')
@@ -20,7 +20,7 @@ class Jwtoken {
         return jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
     }
 
-    public getPayload(req: Request): JwtPayload {
+    getPayload(req: Request): JwtPayload {
         const authHeader = req.headers["authorization"];
         const token = authHeader && authHeader.split(" ")[1];
         if (!token)
