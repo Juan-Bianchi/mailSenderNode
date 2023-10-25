@@ -2,8 +2,11 @@ import {Router, Request, Response} from 'express'
 import {checkToken, verifyAdminRole} from './AuthMiddleware'
 import UserServiceImplementations from '../services/servicesImplementations/UserServiceImplementations';
 import GetVerbError from '../errors/GetVerbError';
+import UserService from '../services/UserService';
+import UserRepositoryImplementation from '../repositories/repositoriesImplementations/UserRepositoryImplementation';
 
-const userService = new UserServiceImplementations();
+const userRep: UserRepositoryImplementation = new UserRepositoryImplementation()
+const userService: UserService = new UserServiceImplementations(userRep);
 
 const userRouter = Router();
 

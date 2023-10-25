@@ -1,8 +1,6 @@
 import AuthService from '../AuthService'
 import LoginDTO from "../../dtos/LoginDTO";
-import EncrypterImpl from "../../utils/EncrypterImpl";
-import UserRepositoryImplementation from "../../repositories/repositoriesImplementations/UserRepositoryImplementation";
-import Jwtoken from "../../utils/Jwtoken";
+import Jwtoken from "../../utils/ultisImplementations/JwtokenImpl";
 import User from "../../models/User";
 import AuthResponseDTO from '../../dtos/AuthResponseDTO';
 import RegisterDTO from '../../dtos/RegisterDTO';
@@ -10,14 +8,21 @@ import UncreatedUser from '../../dtos/UncreatedUser.interface';
 import LoginError from '../../errors/LoginError';
 import RegisterError from '../../errors/RegisterError';
 import prisma from '../../../database/client';
-
-
-const userRep = new UserRepositoryImplementation();
-const encrypter = new EncrypterImpl();
-const jwt = new Jwtoken();
+import UserRepository from '../../repositories/UserRepository';
+import Encrypter from '../../utils/Encrypter';
 
 
 class AuthServiceImplementation implements AuthService {
+
+    userRep: UserRepository;
+    encrypter: Encrypter;
+    jwt: Jwtoken;
+
+    constructor(userRep: UserRepository, encrypter: Encrypter, jwt: Jwtoken) {
+        this.userRep = userRep;
+        this.encrypter =encrypter;
+        this.jwt = jwt;
+    }
 
     async register(newUser: RegisterDTO): Promise<boolean> {
         const transactionResult: boolean = await prisma.$transaction(async () => {
@@ -34,8 +39,8 @@ class AuthServiceImplementation implements AuthService {
             if(!this.passwordIsCorrect) {
                 throw new RegisterError('Password requires 1 uppercase, 1 lowercase, 1 digit, 1 special character, min. 8 characters.');
             }
-            newUser.password = await encrypter.encrypt(newUser.password);
-            return await userRep.saveUser(newUser) !== null;
+            newUser.password = await this.encrypter.encrypt(newUser.password);
+            return await this.userRep.saveUser(newUser) !== null;
         })
         return transactionResult;
     }
@@ -49,15 +54,15 @@ class AuthServiceImplementation implements AuthService {
         if(this.dtoHasMissingFields(user)){
             throw new LoginError('There are missing fields. It is not possible to register the user.');
         }
-        const savedUser: User | null = await userRep.getUserByEmail(user.email);
+        const savedUser: User | null = await this.userRep.getUserByEmail(user.email);
         if(!savedUser) {
             throw new LoginError('Please check your credentials and try again');
         }
-        const passwordIsOk: boolean = await encrypter.validatePassword(user.password, user.email)
+        const passwordIsOk: boolean = await this.encrypter.validatePassword(user.password, user.email)
         if(!passwordIsOk) {
             throw new LoginError('Please check your credentials and try again');
         }
-        const token: string = jwt.createJwtToken(user.userName, user.email, savedUser.role);
+        const token: string = this.jwt.createJwtToken(user.userName, user.email, savedUser.role);
 
         return new AuthResponseDTO(token);
     }

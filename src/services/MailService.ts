@@ -5,8 +5,7 @@ import { Request } from 'express';
 interface MailService {
     getMailsByDateAndId(id: number, date: Date ) : Promise<MailSentDTO[]>;
     getMailsByUserId(userId: number): Promise<MailSentDTO[]>;
-    sendMail(mail: MailSentDTO, payload: JwtPayload): Promise<boolean>;
-    buildDTO(req: Request): MailSentDTO;
+    sendMail(mail: MailSentDTO, email: string): Promise<boolean>;
 }
 
 export default MailService;

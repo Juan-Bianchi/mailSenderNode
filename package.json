@@ -7,7 +7,7 @@
     "tsc": "run tsc",
     "dev": "cross-env APP_STATE=dev nodemon ./src/index.ts",
     "start": "node build/index.js",
-    "test": "cross-env APP_STATE=test jest",
+    "test": "cross-env APP_STATE=test jest --verbose --coverage",
     "firstMigrate": "prisma migrate dev --name init",
     "migrate": "prisma migrate dev"
   },

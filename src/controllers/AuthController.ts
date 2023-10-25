@@ -7,9 +7,16 @@ import PasswordValidationError from '../errors/PasswordValidationError';
 import TokenValidationError from '../errors/TokenValidationError';
 import RegisterError from '../errors/RegisterError';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import ConstraintError from '../errors/ConstraintError';
+import DatabaseError from '../errors/DatabaseError';
+import UserRepositoryImplementation from '../repositories/repositoriesImplementations/UserRepositoryImplementation';
+import EncrypterImpl from '../utils/ultisImplementations/EncrypterImpl';
+import Jwtoken from '../utils/Jwtoken';
+import JwtokenImpl from '../utils/ultisImplementations/JwtokenImpl';
 
-const authService = new AuthServiceImplementation();
+const userRep: UserRepositoryImplementation = new UserRepositoryImplementation()
+const encrypter: EncrypterImpl = new EncrypterImpl(userRep);
+const jwt: Jwtoken = new JwtokenImpl();
+const authService = new AuthServiceImplementation(userRep, encrypter, jwt);
 const authRouter = Router()
 
 
@@ -27,7 +34,7 @@ authRouter.post('/register', async (req: Request, res: Response) => {
     catch(error) {
         if(error instanceof RegisterError ||
            error instanceof PrismaClientKnownRequestError || 
-           error instanceof ConstraintError)
+           error instanceof DatabaseError)
             res.status(403).send(error.message);
         else
             res.status(403).send(error);

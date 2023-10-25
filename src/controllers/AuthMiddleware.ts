@@ -1,10 +1,10 @@
 import { Response, Request, NextFunction, Router } from "express";
-import Jwtoken from "../utils/Jwtoken";
+import JwtokenImpl from "../utils/ultisImplementations/JwtokenImpl";
 import { JwtPayload } from "jsonwebtoken";
 import { Role } from "@prisma/client";
 import TokenValidationError from "../errors/TokenValidationError";
 
-const jsonwebtoken = new Jwtoken();
+const jsonwebtoken = new JwtokenImpl();
 
 const checkToken = (req: Request, res: Response, next: NextFunction)=> {
     try {

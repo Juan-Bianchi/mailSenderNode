@@ -3,7 +3,7 @@ import {Role} from '@prisma/client'
 
 
 class User {
-    id: number | undefined;
+    id: number | undefined | null;
     ownEmail: string;
     userName: string;
     password: string;
