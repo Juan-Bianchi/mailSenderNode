@@ -33,10 +33,10 @@ class AuthServiceImplementation implements AuthService {
             if(this.dtoHasMissingFields(newUser)){
                 throw new RegisterError('There are missing fields. It is not possible to register the user.');
             }
-            if(!this.emailIsCorrect) {
+            if(!this.emailIsCorrect(newUser.email)) {
                 throw new RegisterError('The email given is not correct. Please, provide a different one');
             }
-            if(!this.passwordIsCorrect) {
+            if(!this.passwordIsCorrect(newUser.password)) {
                 throw new RegisterError('Password requires 1 uppercase, 1 lowercase, 1 digit, 1 special character, min. 8 characters.');
             }
             newUser.password = await this.encrypter.encrypt(newUser.password);
@@ -58,26 +58,22 @@ class AuthServiceImplementation implements AuthService {
         if(!savedUser) {
             throw new LoginError('Please check your credentials and try again');
         }
-        const passwordIsOk: boolean = await this.encrypter.validatePassword(user.password, user.email)
+        let passwordIsOk: boolean = await this.encrypter.validatePassword(user.password, user.email)
         if(!passwordIsOk) {
             throw new LoginError('Please check your credentials and try again');
         }
         const token: string = this.jwt.createJwtToken(user.userName, user.email, savedUser.role);
 
-        return new AuthResponseDTO(token);
+        return new AuthResponseDTO(token, 'Logged in');
     }
 
-
-    logout(): void {
-        throw new Error("Method not implemented.");
-    }
 
     private dtoHasMissingFields(user: UncreatedUser): boolean {
         return !user.hasOwnProperty('email') || 
                !user.hasOwnProperty('userName') ||
                !user.hasOwnProperty('password') ||
                 user.email === null || user.password === null ||
-                user.userName === null;
+                user.userName === null || user.userName === '';
     }
 
     private emailIsCorrect(email: string): boolean {

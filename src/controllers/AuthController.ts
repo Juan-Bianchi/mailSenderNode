@@ -1,22 +1,13 @@
 import {Router, Request, Response} from 'express'
-import AuthServiceImplementation from '../services/servicesImplementations/AuthServiceImplementation';
 import RegisterDTO from '../dtos/RegisterDTO';
 import LoginDTO from '../dtos/LoginDTO';
 import LoginError from '../errors/LoginError';
 import PasswordValidationError from '../errors/PasswordValidationError';
 import TokenValidationError from '../errors/TokenValidationError';
 import RegisterError from '../errors/RegisterError';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import DatabaseError from '../errors/DatabaseError';
-import UserRepositoryImplementation from '../repositories/repositoriesImplementations/UserRepositoryImplementation';
-import EncrypterImpl from '../utils/ultisImplementations/EncrypterImpl';
-import Jwtoken from '../utils/Jwtoken';
-import JwtokenImpl from '../utils/ultisImplementations/JwtokenImpl';
+import {authService} from '../utils/ServiceCreator'
 
-const userRep: UserRepositoryImplementation = new UserRepositoryImplementation()
-const encrypter: EncrypterImpl = new EncrypterImpl(userRep);
-const jwt: Jwtoken = new JwtokenImpl();
-const authService = new AuthServiceImplementation(userRep, encrypter, jwt);
 const authRouter = Router()
 
 
@@ -32,12 +23,11 @@ authRouter.post('/register', async (req: Request, res: Response) => {
         res.status(201).json(user);
     }
     catch(error) {
-        if(error instanceof RegisterError ||
-           error instanceof PrismaClientKnownRequestError || 
-           error instanceof DatabaseError)
+        if(error instanceof RegisterError || error instanceof DatabaseError)
             res.status(403).send(error.message);
-        else
-            res.status(403).send(error);
+        else {
+            res.status(403).send('Forbidden');
+        }
     }
 })
 
@@ -58,8 +48,9 @@ authRouter.post('/login', async (req: Request, res: Response) => {
             error instanceof TokenValidationError) {
                 res.status(403).send(error.message);
         }
-        else
-            res.status(403).send(error);
+        else {
+            res.status(403).send('Forbidden');
+        }
     }
 })
 

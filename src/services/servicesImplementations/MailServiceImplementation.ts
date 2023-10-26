@@ -7,7 +7,6 @@ import SendingPovider from "../../mailProviders/classes/SendingProvider";
 import PostVerbError from "../../errors/PostVerbError";
 import Strategy from "../../mailProviders/interface/Strategy";
 import prisma from "../../../database/client";
-import { Request } from "express";
 import MailRepository from "../../repositories/MailRepository";
 import UserRepository from "../../repositories/UserRepository";
 

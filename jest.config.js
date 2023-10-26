@@ -25,6 +25,9 @@ module.exports = {
     'package-lock.json',
     'package.json',
     'schema.prisma',
-    'tests/Mocks'
+    'tests/Mocks',
+    'src/mailProviders/classes/Mailjet.ts',
+    'src/mailProviders/classes/Sendgrid.ts',
+    'src/utils/ServiceCreator.ts'
   ]
 };

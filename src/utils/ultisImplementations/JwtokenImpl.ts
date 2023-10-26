@@ -1,4 +1,4 @@
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import jwt, { JsonWebTokenError, JwtPayload, NotBeforeError, TokenExpiredError } from 'jsonwebtoken'
 import {Request} from 'express'
 import TokenValidationError from '../../errors/TokenValidationError';
 import Jwtoken from '../Jwtoken';
@@ -21,11 +21,18 @@ class JwtokenImpl implements Jwtoken{
     }
 
     getPayload(req: Request): JwtPayload {
-        const authHeader = req.headers["authorization"];
-        const token = authHeader && authHeader.split(" ")[1];
-        if (!token)
+        try {
+            const authHeader = req.headers["authorization"];
+            const token = authHeader && authHeader.split(" ")[1];
+            if(!token)
+                throw new TokenValidationError('Token not correct.');
+            return this.verifyJwtToken(token);
+        }
+        catch(error) {
+            if(error instanceof TokenExpiredError || error instanceof JsonWebTokenError || error instanceof NotBeforeError)
+                throw new TokenValidationError(error.message);
             throw new TokenValidationError('Token not correct.');
-        return this.verifyJwtToken(token);
+        }
     }
 
 }
