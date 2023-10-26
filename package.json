@@ -7,8 +7,8 @@
     "tsc": "run tsc",
     "dev": "cross-env APP_STATE=dev nodemon ./src/index.ts",
     "start": "node build/index.js",
-    "testUnit": "cross-env APP_STATE=testUnit jest --forceExit --detectOpenHandles --maxWorkers=1 --verbose --coverage",
-    "testInt": "cross-env APP_STATE=testInt jest --verbose --coverage",
+    "testUnit": "cross-env APP_STATE=testUnit jest --forceExit --detectOpenHandles --maxWorkers=1 --verbose --coverage --testPathPattern=unit",
+    "testInt": "cross-env APP_STATE=testInt jest --forceExit --detectOpenHandles --maxWorkers=1 --verbose --testPathPattern=integral",
     "firstMigrate": "prisma migrate dev --name init",
     "migrate": "prisma migrate dev"
   },

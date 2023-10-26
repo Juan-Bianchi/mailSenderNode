@@ -4,8 +4,8 @@ const state: string | undefined = process.env.APP_STATE;
 const database_url = (() => {
     switch (state) {
         case 'testUnit':
+        case 'testInt':
             return process.env.DATABASE_TEST_URL;
-        case 'testInt': 
         case 'dev':
             return process.env.DATABASE_DEV_URL;
         default: 

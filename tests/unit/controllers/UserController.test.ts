@@ -4,9 +4,10 @@ import { Role } from '@prisma/client';
 import jwt from 'jsonwebtoken'
 import { userService } from '../../../src/utils/ServiceCreator';
 import GetVerbError from '../../../src/errors/GetVerbError';
+import prisma from '../../../database/client';
 
 describe('/users', () => {
-    it('should register a new User', async () => {
+    it('should get all users', async () => {
         const user: string = 'user';
         const mail: string = 'mail@mail.com'
         const role: string = Role.ADMIN
