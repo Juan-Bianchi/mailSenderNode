@@ -1,5 +1,12 @@
 import request from 'supertest';
 import {app, server} from '../../../src/index';
+import { authService } from '../../../src/utils/Dependencies';
+import RegisterError from '../../../src/errors/RegisterError';
+import DatabaseError from '../../../src/errors/DatabaseError';
+import AuthResponseDTO from '../../../src/dtos/AuthResponseDTO';
+import PasswordValidationError from '../../../src/errors/PasswordValidationError';
+import LoginError from '../../../src/errors/LoginError';
+import TokenValidationError from '../../../src/errors/TokenValidationError';
 
 
 describe('/register', () => {
@@ -9,6 +16,10 @@ describe('/register', () => {
             password: 'securePassword123!',
             email: 'user@example.com',
         };
+
+        jest.spyOn(authService, 'register').mockImplementation( async ()=> {
+            return true;
+        })
     
         const response = await request(app).post('/api/register').send(userData);
 
@@ -27,6 +38,10 @@ describe('/register', () => {
             password: 'securePassword123!',
             email: 'register',
         };
+
+        jest.spyOn(authService, 'register').mockImplementation( async ()=> {
+            throw new RegisterError("Register error");
+        })
     
         const response = await request(app).post('/api/register').send(userData);
 
@@ -43,6 +58,10 @@ describe('/register', () => {
             password: 'securePassword123!',
             email: 'database@mail.com',
         };
+
+        jest.spyOn(authService, 'register').mockImplementation( async ()=> {
+            throw new DatabaseError("Database error");
+        })
     
         const response = await request(app).post('/api/register').send(userData);
 
@@ -59,6 +78,10 @@ describe('/register', () => {
             password: 'securePassword123!',
             email: 'mail@mail.com',
         };
+
+        jest.spyOn(authService, 'register').mockImplementation( async ()=> {
+            throw new Error('Unknown error');
+        })
     
         const response = await request(app).post('/api/register').send(userData);
 
@@ -75,6 +98,11 @@ describe('/login', () => {
             password: 'securePassword123!',
             email: 'user@example.com',
         };
+
+        jest.spyOn(authService, 'login').mockImplementation( async () => {
+            const token: string = 'token';
+            return new AuthResponseDTO(token, 'Logged in'); 
+        })
     
         const response = await request(app).post('/api/login')
             .send(userData);
@@ -93,6 +121,10 @@ describe('/login', () => {
             password: 'password!',
             email: 'register',
         };
+
+        jest.spyOn(authService, 'login').mockImplementation( async () => {
+            throw new PasswordValidationError("Password error");
+        })
     
         const response = await request(app).post('/api/login')
             .send(userData);
@@ -110,6 +142,10 @@ describe('/login', () => {
             password: 'securePassword123!',
             email: 'login@mail.com',
         };
+
+        jest.spyOn(authService, 'login').mockImplementation( async () => {
+            throw new LoginError("Login error");
+        })
     
         const response = await request(app).post('/api/login')
             .send(userData);
@@ -127,6 +163,10 @@ describe('/login', () => {
             password: 'securePassword123!',
             email: 'token@mail.com',
         };
+
+        jest.spyOn(authService, 'login').mockImplementation( async () => {
+            throw new TokenValidationError("Token error");
+        })
     
         const response = await request(app).post('/api/login')
             .send(userData);
@@ -144,6 +184,10 @@ describe('/login', () => {
             password: 'securePassword123!',
             email: 'mail@mail.com',
         };
+
+        jest.spyOn(authService, 'login').mockImplementation( async () => {
+            throw new Error('Unknown error');
+        })
     
         const response = await request(app).post('/api/login')
             .send(userData);

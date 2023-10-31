@@ -1,7 +1,7 @@
 import {Router, Request, Response} from 'express'
 import {checkToken, verifyAdminRole} from './AuthMiddleware'
 import GetVerbError from '../errors/GetVerbError';
-import { userService } from '../utils/ServiceCreator';
+import { userService } from '../utils/Dependencies';
 
 
 

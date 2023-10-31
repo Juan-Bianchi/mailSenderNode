@@ -2,9 +2,10 @@ import request from 'supertest';
 import {app, server} from '../../../src/index';
 import { Role } from '@prisma/client';
 import jwt from 'jsonwebtoken'
-import { userService } from '../../../src/utils/ServiceCreator';
+import { userService } from '../../../src/utils/Dependencies';
 import GetVerbError from '../../../src/errors/GetVerbError';
-import prisma from '../../../database/client';
+import UserDTO from '../../../src/dtos/UserDTO';
+import User from '../../../src/models/User';
 
 describe('/users', () => {
     it('should get all users', async () => {
@@ -12,6 +13,11 @@ describe('/users', () => {
         const mail: string = 'mail@mail.com'
         const role: string = Role.ADMIN
         const token: string = jwt.sign({user, mail, role} , 'secret' , { expiresIn: '1h' });
+
+        jest.spyOn(userService, 'getAllUsers').mockImplementation(async () => {
+            return [new UserDTO(new User('user@mail.com', 'user', 'password', [], Role.USER, 1)), new UserDTO(new User('user@mail.com', 'user', 'password', [], Role.USER, 2))]
+        });
+
         const response = await request(app).get('/api/users').set("Authorization", `Bearer ${token}`)
 
         expect.assertions(2);

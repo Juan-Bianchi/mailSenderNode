@@ -6,7 +6,7 @@ import PasswordValidationError from '../errors/PasswordValidationError';
 import TokenValidationError from '../errors/TokenValidationError';
 import RegisterError from '../errors/RegisterError';
 import DatabaseError from '../errors/DatabaseError';
-import {authService} from '../utils/ServiceCreator'
+import {authService} from '../utils/Dependencies'
 
 const authRouter = Router()
 

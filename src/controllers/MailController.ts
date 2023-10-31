@@ -7,7 +7,7 @@ import PostVerbError from '../errors/PostVerbError';
 import GetVerbError from '../errors/GetVerbError';
 import DatabaseError from '../errors/DatabaseError';
 import Mail from '../models/Mail';
-import { mailService } from '../utils/ServiceCreator';
+import { mailService } from '../utils/Dependencies';
 
 const mailRouter = Router();
 

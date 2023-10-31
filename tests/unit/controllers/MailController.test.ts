@@ -2,6 +2,10 @@ import request from 'supertest';
 import {app, server} from '../../../src/index';
 import { Role } from '@prisma/client';
 import jwt from 'jsonwebtoken'
+import { mailService } from '../../../src/utils/Dependencies';
+import PostVerbError from '../../../src/errors/PostVerbError';
+import GetVerbError from '../../../src/errors/GetVerbError';
+import DatabaseError from '../../../src/errors/DatabaseError';
 
 
 describe('/mails', () => {
@@ -15,6 +19,10 @@ describe('/mails', () => {
         const message = 'message';
         const recipients = ['recipient1@example.com', 'recipient2@example.com'];
         const date = new Date();
+
+        jest.spyOn(mailService, 'sendMail').mockImplementation( async ()=> {
+            return true;
+        })
         
         const response = await request(app)
                             .post('/api/mails')
@@ -48,6 +56,10 @@ describe('/mails', () => {
         const message = 'message';
         const recipients = ['recipient1@example.com', 'recipient2@example.com'];
         const date = new Date();
+
+        jest.spyOn(mailService, 'sendMail').mockImplementation( async ()=> {
+            throw new PostVerbError('Mail could not be sent. You have exceeded the maximum amount of sent emails for today.');
+        })
         
         const response = await request(app)
                             .post('/api/mails')
@@ -71,6 +83,10 @@ describe('/mails', () => {
         const message = 'message';
         const recipients = ['recipient1@example.com', 'recipient2@example.com'];
         const date = new Date();
+
+        jest.spyOn(mailService, 'sendMail').mockImplementation( async ()=> {
+            throw new GetVerbError('Not user found with this id.');
+        })
         
         const response = await request(app)
                             .post('/api/mails')
@@ -94,6 +110,10 @@ describe('/mails', () => {
         const message = 'message';
         const recipients = ['recipient1@example.com', 'recipient2@example.com'];
         const date = new Date();
+
+        jest.spyOn(mailService, 'sendMail').mockImplementation( async ()=> {
+            throw new DatabaseError('Mail could not be sent. Please try again later');
+        })
         
         const response = await request(app)
                             .post('/api/mails')
@@ -117,6 +137,10 @@ describe('/mails', () => {
         const message = 'message';
         const recipients = ['recipient1@example.com', 'recipient2@example.com'];
         const date = new Date();
+
+        jest.spyOn(mailService, 'sendMail').mockImplementation( async ()=> {
+            throw new Error('Forbidden');
+        })
         
         const response = await request(app)
                             .post('/api/mails')
